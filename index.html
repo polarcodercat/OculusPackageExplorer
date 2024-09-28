@@ -1,1 +1,44 @@
-wat the sigma1
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        function onSearchPackage()
+        {
+            var packageName = document.getElementById("packageName").value + ".json";
+            var requester = new XMLHttpRequest();
+            requester.open("GET", "https://raw.githubusercontent.com/threethan/MetaMetadata/refs/heads/main/data/oculus/" + packageName);
+            requester.onreadystatechange = function() {
+                if (requester.readyState === 4) {
+                    if (requester.status === 200) { 
+                        var responseData = JSON.parse(requester.responseText);
+                        document.getElementById("appname").innerText = responseData.data.node["display_name"]
+                        document.getElementById("onstore").innerText = responseData.data.node["is_approved"]
+                        document.getElementById("category").innerText = responseData.data.node["context_category"]["context_category"];
+                        document.getElementById("developer").innerText = responseData.data.node["lastRevision"]["nodes"][0]["pdp_metadata"]["publisher_name"];
+                        document.getElementById("appPFP").src = responseData.data.node["cover_square_image"]["uri"];
+                    } else {
+                        document.getElementById("appname").innerText = "Not Found";
+                    }
+                }
+            };
+            requester.send();
+        }
+    </script>
+    <title>Oculus Package Explorer</title>
+</head>
+<body>
+    <h1>
+        Oculus Package Explorer
+    </h1>
+    <textarea id="packageName" rows="1" cols="30" style="resize: none;", placeholder="com.AnotherAxiom.GorillaTag"></textarea>    
+    <button onclick="onSearchPackage()">Search Package</button>
+    <!-- Info Area -->
+     <h2>App Name: <a id="appname"></a></h2>
+     <h2>Approved: <a id="onstore"></a></h2>
+     <h2>Developer: <a id="developer"></a></h2>
+     <h2>Category: <a id="category"></a></h2>
+     <img id="appPFP" src="" width="200" height="200">
+</body>
+</html>
