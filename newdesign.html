@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Oculus Package Explorer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0078d7;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+
+        .info {
+            background-color: white;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            margin: 10px 0;
+        }
+
+        img {
+            display: block;
+            margin: 20px auto;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+    <script>
+        function onSearchPackage() {
+            var packageName = document.getElementById("packageName").value + ".json";
+            var requester = new XMLHttpRequest();
+            requester.open("GET", "https://raw.githubusercontent.com/threethan/MetaMetadata/refs/heads/main/data/oculus/" + packageName);
+            requester.onreadystatechange = function() {
+                if (requester.readyState === 4) {
+                    if (requester.status === 200) {
+                        var responseData = JSON.parse(requester.responseText);
+                        document.getElementById("appname").innerText = responseData.data.node["display_name"];
+                        document.getElementById("onstore").innerText = responseData.data.node["is_approved"];
+                        document.getElementById("category").innerText = responseData.data.node["context_category"]["context_category"];
+                        document.getElementById("developer").innerText = responseData.data.node["lastRevision"]["nodes"][0]["pdp_metadata"]["publisher_name"];
+                        document.getElementById("appPFP").src = responseData.data.node["cover_square_image"]["uri"];
+                    } else {
+                        document.getElementById("appname").innerText = "Not Found";
+                    }
+                }
+            };
+            requester.send();
+        }
+    </script>
+</head>
+<body>
+    <h1>Oculus Package Explorer</h1>
+    <textarea id="packageName" rows="1" style="resize: none;" placeholder="com.AnotherAxiom.GorillaTag"></textarea>
+    <button onclick="onSearchPackage()">Search Package</button>
+    <div class="info">
+        <h2>App Name: <span id="appname"></span></h2>
+        <h2>Approved: <span id="onstore"></span></h2>
+        <h2>Developer: <span id="developer"></span></h2>
+        <h2>Category: <span id="category"></span></h2>
+        <img id="appPFP" src="" width="200" height="200" alt="App Cover">
+    </div>
+</body>
+</html>
